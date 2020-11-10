@@ -1,15 +1,16 @@
 {
-     "source":"work:work@dev@(x.x.x.x:3306)/admin",
-     "dest":"root:root@(127.0.0.1:3306)/admin",
+     "source":"root:654321@(localhost:3306)/test1",
+     "dest":"root:654321@(localhost:3306)/test2",
      "alter_ignore":{
         "op_logger*":{
         }
      },
-     "tables":["schema_info"],
-     "sync_data_tables":["user_e_trans","staff_loan_data"],
-     "tables_ignore":["op_logger*"],
+     "sync":true,
+     "tables":["user"],
+     "sync_data_tables":[],
+     "tables_ignore":[],
      "email":{
-          "send_mail":false,
+         "send_mail":false,
          "smtp_host":"smtp.163.com:25",
          "from":"xxx@163.com",
          "password":"xxx",

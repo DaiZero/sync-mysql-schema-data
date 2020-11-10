@@ -13,7 +13,7 @@ import (
 
 //user:password@tcp(127.0.0.1:3306)/test
 var configPath = flag.String("conf", "./config.json", "json config file path")
-var sync = flag.Bool("sync", false, "sync shcema change to dest db")
+var sync = flag.Bool("sync", true, "sync shcema change to dest db")
 var drop = flag.Bool("drop", false, "drop fields,index,foreign key")
 var source = flag.String("source", "", "mysql dsn source,eg: test@(10.10.0.1:3306)/test\n\twhen it is not empty ignore [-conf] param")
 var dest = flag.String("dest", "", "mysql dsn dest,eg test@(127.0.0.1:3306)/imis")
@@ -21,7 +21,7 @@ var tables = flag.String("tables", "", "table names to check,equivalent to json 
 var tablesIGNORE = flag.String("tables_ignore", "", "table names to ignore check and ignore sync data\n\teg : product_base,order_*")
 var mailTo = flag.String("mail_to", "", "overwrite config's email.to")
 
-var syncData = flag.Bool("sync_data", true, "sync source db table data  to dest db table")
+var syncData = flag.Bool("sync_data", false, "sync source db table data  to dest db table")
 var syncDataTruncate = flag.Bool("sync_data_truncate", false, "is need truncate  source db table data  to dest db table")
 
 func init() {

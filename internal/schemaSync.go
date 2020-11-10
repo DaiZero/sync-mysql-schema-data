@@ -247,7 +247,7 @@ func (sc *SchemaSync) SyncSQL4Dest(sqlStr string, sqls []string) error {
 	}
 	t.stop()
 	if err != nil {
-		log.Println("EXEC_SQL_FAIELD", err)
+		log.Println("EXEC_SQL_FIELD", err)
 		return err
 	}
 	log.Println("EXEC_SQL_SUCCESS,used:", t.usedSecond())
@@ -310,7 +310,7 @@ func CheckSchemaDiff(cfg *Config) {
 	countFailed := 0
 	canRunTypePref := "single"
 	//先执行单个表的
-run_sync:
+runSync:
 	for typeName, sds := range changedTables {
 		if !strings.HasPrefix(typeName, canRunTypePref) {
 			continue
@@ -349,7 +349,7 @@ run_sync:
 	//最后再执行多个表的alter
 	if canRunTypePref == "single" {
 		canRunTypePref = "multi"
-		goto run_sync
+		goto runSync
 	}
 
 	if sc.Config.Sync {
@@ -375,7 +375,7 @@ func SyncTableData(cfg *Config) {
 
 	// 源数据库所有的表
 	allSourceTables := sc.SourceDb.GetTableNames()
-	needSyncDataTablesOk := []string{}
+	var needSyncDataTablesOk []string
 	for _, tableTmp := range allSourceTables {
 		if cfg.CheckMatchSyncTables(tableTmp) == false {
 			continue
