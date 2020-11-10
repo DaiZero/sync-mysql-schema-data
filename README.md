@@ -2,7 +2,7 @@
 基于 [mysql-schema-sync](github.com/hidu/mysql-schema-sync) 开发的同步数据的工具.
 ### 使用
 #### 多数用法,参看[mysql-schema-sync](github.com/hidu/mysql-schema-sync)的说明
-```
+```bash
 Usage of ./main:
   -conf string
     	json config file path (default "./config.json")
@@ -39,6 +39,4 @@ Base On https://github.com/hidu/mysql-schema-sync/
 "sync_data_tables":["user_e_trans*","staff_loan_data"],
 支持正则了
 ```
-#### 另外说明,这个工具自己随手写的,可能比较粗糙,最近也特忙,可能有一些问题.如果使用的时候,遇到了,可以留言,我会处理的.
-#### QQ:1694669
 
