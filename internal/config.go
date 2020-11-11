@@ -151,8 +151,5 @@ func LoadConfig(confPath string) *Config {
 		log.Fatalln("load json conf:", confPath, "failed:", err)
 	}
 	cfg.ConfigPath = confPath
-	//	if *mailTo != "" {
-	//		cfg.Email.To = *mailTo
-	//	}
 	return cfg
 }
