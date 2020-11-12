@@ -1,7 +1,7 @@
 ## sync-mysql-schema-data
-基于 [mysql-schema-sync](github.com/hidu/mysql-schema-sync) 开发的同步数据的工具.
+基于 [mysql-schema-sync](http://github.com/hidu/mysql-schema-sync) 开发的同步数据的工具.
 ### 使用
-#### 多数用法,参看[mysql-schema-sync](github.com/hidu/mysql-schema-sync)的说明
+#### 多数用法,参看[mysql-schema-sync](http://github.com/hidu/mysql-schema-sync)的说明
 ```bash
 Usage of ./main:
   -conf string
