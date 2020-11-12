@@ -3,12 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/DaiZero/sync-mysql-schema-data/internal"
 	"log"
 	"os"
 	"runtime"
 	"strings"
-
-	"github.com/hidu/mysql-schema-sync/internal"
 )
 
 // 定义命令行参数对应的变量
@@ -63,9 +62,27 @@ var cfg *internal.Config
 func main() {
 	//把用户传递的命令行参数解析为对应变量的值
 	flag.Parse()
-	// 先读取配置文件
+	readConfig()
+	defer (func() {
+		if err := recover(); err != nil {
+			log.Println(err)
+			log.Println(fullStack())
+			cfg.SendMailFail(fmt.Sprintf("%s", err))
+			log.Fatalln("exit")
+		}
+	})()
+	cfg.Check()
+	if cfg.Sync {
+		internal.SyncTableData(cfg)
+	}
+	if cfg.SyncData {
+		internal.SyncTableData(cfg)
+	}
+}
+
+// 读取设置的配置信息
+func readConfig() {
 	cfg = internal.LoadConfig(*configPath)
-	// 然后命令行输入参数值覆盖配置文件里的设置值
 	if *source != "" {
 		cfg.SourceDSN = *source
 	}
@@ -75,22 +92,18 @@ func main() {
 	if *sync {
 		cfg.Sync = *sync
 	}
-
 	if *drop {
 		cfg.Drop = *drop
 	}
-
 	if *syncData {
 		cfg.SyncData = *syncData
 	}
 	if *syncDataTruncate {
 		cfg.SyncDataTruncate = *syncDataTruncate
 	}
-
 	if *mailTo != "" && cfg.Email != nil {
 		cfg.Email.To = *mailTo
 	}
-
 	if cfg.Tables == nil {
 		cfg.Tables = []string{}
 	}
@@ -98,7 +111,8 @@ func main() {
 		cfg.TablesIGNORE = []string{}
 	}
 	if *tables != "" {
-		_ts := strings.Split(*tables, ",")
+		tableStr := strings.ReplaceAll(*tables, "，", ",")
+		_ts := strings.Split(tableStr, ",")
 		for _, _name := range _ts {
 			_name = strings.TrimSpace(_name)
 			if _name != "" {
@@ -107,7 +121,8 @@ func main() {
 		}
 	}
 	if *tablesIGNORE != "" {
-		_ts := strings.Split(*tablesIGNORE, ",")
+		tableStr := strings.ReplaceAll(*tablesIGNORE, "，", ",")
+		_ts := strings.Split(tableStr, ",")
 		for _, _name := range _ts {
 			_name = strings.TrimSpace(_name)
 			if _name != "" {
@@ -115,22 +130,6 @@ func main() {
 			}
 		}
 	}
-	defer (func() {
-		if err := recover(); err != nil {
-			log.Println(err)
-			log.Println(fullStack())
-			cfg.SendMailFail(fmt.Sprintf("%s", err))
-			log.Fatalln("exit")
-		}
-	})()
-
-	cfg.Check()
-	if *syncData == false {
-		internal.CheckSchemaDiff(cfg)
-	} else {
-		internal.SyncTableData(cfg)
-	}
-
 }
 
 func fullStack() string {

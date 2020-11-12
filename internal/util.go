@@ -13,7 +13,7 @@ import (
 )
 
 // Version version
-const Version = "0.3"
+const Version = "0.4"
 
 // AppURL site
 const AppURL = "Base On https://github.com/hidu/mysql-schema-sync/"

@@ -3,11 +3,8 @@ package internal
 import (
 	"database/sql"
 	"fmt"
-
-	//load mysql
-	"log"
-
 	_ "github.com/go-sql-driver/mysql"
+	"log"
 )
 
 // MyDb db struct
