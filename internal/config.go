@@ -13,7 +13,7 @@ type Config struct {
 	AlterIgnore      map[string]*AlterIgnoreTable `json:"alter_ignore"`
 	Tables           []string                     `json:"tables"`
 	TablesIGNORE     []string                     `json:"tables_ignore"`
-	Email            *EmailStruct                 `json:"email"`
+	Email            *EmailConfig                 `json:"email"`
 	ConfigPath       string                       `json:"config_path"`
 	Sync             bool                         `json:"sync"`
 	Drop             bool                         `json:"drop"`

@@ -7,8 +7,8 @@ import (
 	"strings"
 )
 
-// EmailStruct email conf info
-type EmailStruct struct {
+// EmailConfig 邮件配置信息
+type EmailConfig struct {
 	SendMailAble bool   `json:"send_mail"`
 	SMTPHost     string `json:"smtp_host"`
 	From         string `json:"from"`
@@ -16,8 +16,9 @@ type EmailStruct struct {
 	To           string `json:"to"`
 }
 
+//tableStyle 表的展示样式
 const tableStyle = `
-<sTyle type='text/css'>
+<style type='text/css'>
       table {border-collapse: collapse;border-spacing: 0;}
      .tb_1{border:1px solid #cccccc;table-layout:fixed;word-break:break-all;width: 100%;background:#ffffff;margin-bottom:5px}
      .tb_1 caption{text-align: center;background: #F0F4F6;font-weight: bold;padding-top: 5px;height: 25px;border:1px solid #cccccc;border-bottom:none}
@@ -31,11 +32,11 @@ const tableStyle = `
      .t_c{text-align: center !important;}
      .t_r{text-align: right !important;}
      .t_l{text-align: left !important;}
-</stYle>
+</style>
 `
 
-// SendMail send mail
-func (m *EmailStruct) SendMail(title string, body string) {
+// SendMail 发送邮件
+func (m *EmailConfig) SendMail(title string, body string) {
 	if !m.SendMailAble {
 		log.Println("send email : no")
 		return
