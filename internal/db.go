@@ -13,10 +13,11 @@ type MyDb struct {
 	dbType string
 }
 
-// NewMyDb parse dsn
+//NewMyDb 新建数据库连接
 func NewMyDb(dsn string, dbType string) *MyDb {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
+		//如果连接有错误，就中断程序
 		panic(fmt.Sprintf("connect to db [%s] failed,", dsn, err))
 	}
 	return &MyDb{
@@ -25,23 +26,24 @@ func NewMyDb(dsn string, dbType string) *MyDb {
 	}
 }
 
-// GetTableNames table names
+// GetTableNames 获取数据库下的表名集合
 func (mydb *MyDb) GetTableNames() []string {
-	rs, err := mydb.Query("show table status")
+	// 查询表信息
+	rs, err := mydb.Query("show table status;")
 	if err != nil {
-		panic("show tables failed:" + err.Error())
+		panic("show tableNames failed:" + err.Error())
 	}
 	defer rs.Close()
-	tables := []string{}
+	var tableNames []string
 	columns, _ := rs.Columns()
 	for rs.Next() {
-		var values = make([]interface{}, len(columns))
+		values := make([]interface{}, len(columns))
 		valuePtrs := make([]interface{}, len(columns))
 		for i := range columns {
 			valuePtrs[i] = &values[i]
 		}
 		if err := rs.Scan(valuePtrs...); err != nil {
-			panic("show tables failed when scan," + err.Error())
+			panic("show tableNames failed when scan," + err.Error())
 		}
 		var valObj = make(map[string]interface{})
 		for i, col := range columns {
@@ -56,14 +58,15 @@ func (mydb *MyDb) GetTableNames() []string {
 			valObj[col] = v
 		}
 		if valObj["Engine"] != nil {
-			tables = append(tables, valObj["Name"].(string))
+			tableNames = append(tableNames, valObj["Name"].(string))
 		}
 	}
-	return tables
+	return tableNames
 }
 
 // GetTableSchema table schema
 func (mydb *MyDb) GetTableSchema(name string) (schema string) {
+	// 获取表的创建信息
 	rs, err := mydb.Query(fmt.Sprintf("show create table `%s`", name))
 	if err != nil {
 		log.Println(err)
@@ -71,15 +74,15 @@ func (mydb *MyDb) GetTableSchema(name string) (schema string) {
 	}
 	defer rs.Close()
 	for rs.Next() {
-		var vname string
-		if err := rs.Scan(&vname, &schema); err != nil {
+		var vName string
+		if err := rs.Scan(&vName, &schema); err != nil {
 			panic(fmt.Sprintf("get table %s 's schema failed,%s", name, err))
 		}
 	}
 	return
 }
 
-// Query execute sql query
+// Query 执行SQL查询语句（带入参）
 func (mydb *MyDb) Query(query string, args ...interface{}) (*sql.Rows, error) {
 	log.Println("[SQL]", "["+mydb.dbType+"]", query, args)
 	return mydb.Db.Query(query, args...)

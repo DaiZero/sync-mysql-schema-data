@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-// Config  config struct
+// 配置结构体
 type Config struct {
 	SourceDSN        string                       `json:"source"`
 	DestDSN          string                       `json:"dest"`
@@ -36,10 +36,10 @@ type AlterIgnoreTable struct {
 
 // IsIgnoreField isIgnore
 func (cfg *Config) IsIgnoreField(table string, name string) bool {
-	for tname, dit := range cfg.AlterIgnore {
-		if simpleMatch(tname, table, "IsIgnoreField_table") {
+	for tName, dit := range cfg.AlterIgnore {
+		if simpleMatch(tName, table, "IsIgnoreField_table") {
 			for _, col := range dit.Column {
-				if simpleMatch(col, name, "IsIgnoreField_colum") {
+				if simpleMatch(col, name, "IsIgnoreField_column") {
 					return true
 				}
 			}
