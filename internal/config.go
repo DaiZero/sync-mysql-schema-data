@@ -14,12 +14,12 @@ type Config struct {
 	Tables           []string                     `json:"tables"`
 	TablesIGNORE     []string                     `json:"tables_ignore"`
 	Email            *EmailStruct                 `json:"email"`
-	ConfigPath       string
-	Sync             bool
-	Drop             bool
-	SyncData         bool
-	SyncDataTables   []string `json:"sync_data_tables"`
-	SyncDataTruncate bool
+	ConfigPath       string                       `json:"config_path"`
+	Sync             bool                         `json:"sync"`
+	Drop             bool                         `json:"drop"`
+	SyncData         bool                         `json:"sync_data"`
+	SyncDataTables   []string                     `json:"sync_data_tables"`
+	SyncDataTruncate bool                         `json:"sync_data_truncate"`
 }
 
 func (cfg *Config) String() string {
