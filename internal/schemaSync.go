@@ -367,9 +367,9 @@ func SyncTableData(cfg *Config) {
 	sc := NewSchemaSync(cfg)
 
 	needSyncDataTables := cfg.SyncDataTables
-	log.Println("[SyncTableData] tables:", needSyncDataTables)
+	log.Println("[同步表数据] 需同步的表名:", needSyncDataTables)
 	if len(needSyncDataTables) <= 0 {
-		log.Println("[SyncTableData] no tables need sync")
+		log.Println("[同步表数据] 没有表需要同步")
 		return
 	}
 
@@ -387,23 +387,23 @@ func SyncTableData(cfg *Config) {
 	var limitNum float64 = 100
 	for _, oneTable := range needSyncDataTablesOk {
 		if cfg.CheckMatchIgnoreTables(oneTable) == true {
-			log.Println("[SyncTableData] ignore table:", oneTable)
+			log.Println("[同步表数据] 忽略的表名:", oneTable)
 			continue
 		}
 		if cfg.SyncDataTruncate == true {
 			_, err := sc.DestDb.Db.Exec("truncate  table " + oneTable)
 			if err != nil {
-				log.Println("[SyncTableData] truncate table error :", oneTable, " error:", err)
+				log.Println("[同步表数据] truncate table error :", oneTable, " error:", err)
 				continue
 			}
-			log.Println("[SyncTableData] truncate table:", oneTable)
+			log.Println("[同步表数据] truncate table:", oneTable)
 		}
 		//查询数据表 是否自增
 		hasAutoIncrement := true
 		sqlTableStatus := fmt.Sprintf("show  table  status where  Name='%s'", oneTable)
 		tableStatusData := sc.DestDb.QueryAll(sqlTableStatus)
 		if len(tableStatusData) == 0 {
-			log.Println("[SyncTableData] show table status error:", sqlTableStatus)
+			log.Println("[同步表数据] show table status error:", sqlTableStatus)
 			continue
 		}
 		autoIncrement := tableStatusData[0]["Auto_increment"]
@@ -428,20 +428,20 @@ func SyncTableData(cfg *Config) {
 				insertSql := buildInsertSql(oneTable, valObj, cfg.SyncDataTruncate, hasAutoIncrement)
 				insertResult, insertErr := sc.DestDb.Db.Exec(insertSql)
 				if insertResult == nil || insertErr != nil {
-					log.Println("[SyncTableData] insert error:", insertErr, " table:", oneTable, "sql:", insertSql)
+					log.Println("[同步表数据] 数据插入出错:", insertErr, " 表名:", oneTable, "sql:", insertSql)
 					continue
 				}
 				insertId, insertErr := insertResult.LastInsertId()
 				insertAffectedNum, _ := insertResult.RowsAffected()
 				if (insertId == 0 && insertAffectedNum == 0) || insertErr != nil {
-					log.Println("[SyncTableData] insert error:", insertErr, " insertId:", insertId, " insertAffectedNum:", insertAffectedNum, " table:", oneTable)
+					log.Println("[同步表数据] 数据插入出错:", insertErr, " insertId:", insertId, " insertAffectedNum:", insertAffectedNum, " 表名:", oneTable)
 					continue
 				}
 				okNum++
 			}
 		}
 
-		log.Println("[SyncTableData] table :", oneTable, " totalNum:", totalNum, " okNum:", okNum)
+		log.Println("[同步表数据] 表名 :", oneTable, " 源数据量:", totalNum, " 成功:", okNum)
 	}
 }
 
