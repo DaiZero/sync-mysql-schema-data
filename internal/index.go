@@ -8,24 +8,27 @@ import (
 	"strings"
 )
 
-// DbIndex db index
+// DbIndex 数据库索引
 type DbIndex struct {
-	IndexType      indexType
-	Name           string
-	SQL            string
-	RelationTables []string //相关联的表
+	IndexType      indexType `json:"index_type"`
+	Name           string    `json:"name"`
+	SQL            string    `json:"sql"`
+	RelationTables []string  `json:"relation_tables"` //相关联的表
 }
 
 type indexType string
 
 const (
-	indexTypePrimary    indexType = "PRIMARY"
-	indexTypeIndex                = "INDEX"
-	indexTypeForeignKey           = "FOREIGN KEY"
+	// 主键索引
+	indexTypePrimary indexType = "PRIMARY"
+	// 正常索引
+	indexTypeIndex = "INDEX"
+	// 外键索引
+	indexTypeForeignKey = "FOREIGN KEY"
 )
 
 func (idx *DbIndex) alterAddSQL(drop bool) string {
-	alterSQL := []string{}
+	var alterSQL []string
 	if drop {
 		dropSQL := idx.alterDropSQL()
 		if dropSQL != "" {
