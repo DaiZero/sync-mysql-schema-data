@@ -7,12 +7,14 @@ import (
 	"os"
 )
 
+//statics
 type statics struct {
 	timer  *myTimer
 	tables []*tableStatics
 	Config *Config
 }
 
+//tableStatics
 type tableStatics struct {
 	timer       *myTimer
 	table       string
@@ -41,6 +43,7 @@ func (s *statics) newTableStatics(table string, sd *TableAlterData) *tableStatic
 	return ts
 }
 
+//toHTML 转化为html
 func (s *statics) toHTML() string {
 	code := "<h2>Result</h2>\n"
 	code += "<h3>Tables</h3>\n"
@@ -117,6 +120,7 @@ func (s *statics) toHTML() string {
 	return code
 }
 
+//alterFailedNum 返回失败数量
 func (s *statics) alterFailedNum() int {
 	n := 0
 	for _, tb := range s.tables {
@@ -127,6 +131,7 @@ func (s *statics) alterFailedNum() int {
 	return n
 }
 
+//sendMailNotice 发送邮件告示
 func (s *statics) sendMailNotice(cfg *Config) {
 	if cfg.Email == nil {
 		log.Println("mail conf is not set,skip send mail")
