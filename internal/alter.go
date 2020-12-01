@@ -14,6 +14,7 @@ const (
 	alterTypeAlter            = 3
 )
 
+// String 格式化同步类型
 func (at alterType) String() string {
 	switch at {
 	case alterTypeNo:

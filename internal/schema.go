@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// MySchema table schema
+// MySchema 表结构（包含字段，索引，外键）
 type MySchema struct {
 	SchemaRaw  string
 	Fields     map[string]string
@@ -13,6 +13,7 @@ type MySchema struct {
 	ForeignAll map[string]*DbIndex
 }
 
+// String 格式化表结构相关信息（字段、外键、外键）
 func (mys *MySchema) String() string {
 	s := "Fields:\n"
 	fl := maxMapKeyLen(mys.Fields, 2)
@@ -33,7 +34,7 @@ func (mys *MySchema) String() string {
 	return s
 }
 
-// GetFieldNames table names
+// GetFieldNames 获取表中字段名称集合
 func (mys *MySchema) GetFieldNames() []string {
 	var names []string
 	for name := range mys.Fields {
@@ -42,6 +43,7 @@ func (mys *MySchema) GetFieldNames() []string {
 	return names
 }
 
+//RelationTables 表结构的外键相关表
 func (mys *MySchema) RelationTables() []string {
 	tbs := make(map[string]int)
 	for _, idx := range mys.ForeignAll {
@@ -56,7 +58,12 @@ func (mys *MySchema) RelationTables() []string {
 	return tables
 }
 
-// ParseSchema parse table's schema
+//RelationTables 源表结构差异的相关表结构
+func (diff *SchemaDiff) RelationTables() []string {
+	return diff.Source.RelationTables()
+}
+
+// ParseSchema 解析表结构
 func ParseSchema(schema string) *MySchema {
 	schema = strings.TrimSpace(schema)
 	lines := strings.Split(schema, "\n")
@@ -90,27 +97,22 @@ func ParseSchema(schema string) *MySchema {
 			}
 		}
 	}
-	//	fmt.Println(schema)
-	//	fmt.Println(mys)
-	//	fmt.Println("-----")
 	return mys
 
 }
 
+//SchemaDiff 结构差异结构体（包含表面，源表的结构以及目标表的结构）
 type SchemaDiff struct {
 	Table  string
 	Source *MySchema
 	Dest   *MySchema
 }
 
+//newSchemaDiff 新增并且返回SchemaDiff
 func newSchemaDiff(table, source, dest string) *SchemaDiff {
 	return &SchemaDiff{
 		Table:  table,
 		Source: ParseSchema(source),
 		Dest:   ParseSchema(dest),
 	}
-}
-
-func (sdiff *SchemaDiff) RelationTables() []string {
-	return sdiff.Source.RelationTables()
 }

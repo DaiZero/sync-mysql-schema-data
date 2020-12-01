@@ -27,6 +27,7 @@ const (
 	indexTypeForeignKey = "FOREIGN KEY"
 )
 
+//alterAddSQL 输出新增索引的SQL语句
 func (idx *DbIndex) alterAddSQL(drop bool) string {
 	var alterSQL []string
 	if drop {
@@ -47,11 +48,13 @@ func (idx *DbIndex) alterAddSQL(drop bool) string {
 	return strings.Join(alterSQL, ",\n")
 }
 
+// String 格式化数据库索引
 func (idx *DbIndex) String() string {
 	bs, _ := json.MarshalIndent(idx, "  ", " ")
 	return string(bs)
 }
 
+//alterDropSQL 输出索引删除语句
 func (idx *DbIndex) alterDropSQL() string {
 	switch idx.IndexType {
 	case indexTypePrimary:
@@ -66,6 +69,7 @@ func (idx *DbIndex) alterDropSQL() string {
 	return ""
 }
 
+//addRelationTable 新增关联表
 func (idx *DbIndex) addRelationTable(table string) {
 	table = strings.TrimSpace(table)
 	if table != "" {
@@ -79,6 +83,7 @@ var indexReg = regexp.MustCompile(`^([A-Z]+\s)?KEY\s`)
 //匹配外键
 var foreignKeyReg = regexp.MustCompile("^CONSTRAINT `(.+)` FOREIGN KEY.+ REFERENCES `(.+)` ")
 
+//parseDbIndexLine 解析索引行
 func parseDbIndexLine(line string) *DbIndex {
 	line = strings.TrimSpace(line)
 	idx := &DbIndex{
