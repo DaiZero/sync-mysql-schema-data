@@ -8,33 +8,46 @@ import (
 
 // 配置结构体
 type Config struct {
-	SourceDSN        string                       `json:"source"`
-	DestDSN          string                       `json:"dest"`
-	AlterIgnore      map[string]*AlterIgnoreTable `json:"alter_ignore"`
-	Tables           []string                     `json:"tables"`
-	TablesIGNORE     []string                     `json:"tables_ignore"`
-	Email            *EmailConfig                 `json:"email"`
-	ConfigPath       string                       `json:"config_path"`
-	Sync             bool                         `json:"sync"`
-	Drop             bool                         `json:"drop"`
-	SyncData         bool                         `json:"sync_data"`
-	SyncDataTables   []string                     `json:"sync_data_tables"`
-	SyncDataTruncate bool                         `json:"sync_data_truncate"`
+	// 源数据库地址
+	SourceDSN string `json:"source"`
+	// 目标数据库地址
+	DestDSN string `json:"dest"`
+	// 表格忽略信息集合
+	AlterIgnore map[string]*AlterIgnoreTable `json:"alter_ignore"`
+	// 要同步的表名集合
+	Tables []string `json:"tables"`
+	// 忽略的表名集合
+	TablesIGNORE []string `json:"tables_ignore"`
+	// 电子邮件配置
+	Email *EmailConfig `json:"email"`
+	// 配置地址
+	ConfigPath string `json:"config_path"`
+	// 是否同步表结构
+	Sync bool `json:"sync"`
+	// 是否使用 Drop
+	Drop bool `json:"drop"`
+	// 是否同步表数据
+	SyncData bool `json:"sync_data"`
+	// 要同步数据的表名集合
+	SyncDataTables []string `json:"sync_data_tables"`
+	// 同步数据是否使用Truncate
+	SyncDataTruncate bool `json:"sync_data_truncate"`
 }
 
-func (cfg *Config) String() string {
-	ds, _ := json.MarshalIndent(cfg, "  ", "  ")
-	return string(ds)
-}
-
-// AlterIgnoreTable table's ignore info
+// AlterIgnoreTable 表格忽略信息结构体
 type AlterIgnoreTable struct {
 	Column     []string `json:"column"`
 	Index      []string `json:"index"`
 	ForeignKey []string `json:"foreign"` //外键
 }
 
-// IsIgnoreField isIgnore
+// String 序列化
+func (cfg *Config) String() string {
+	ds, _ := json.MarshalIndent(cfg, "  ", "  ")
+	return string(ds)
+}
+
+// IsIgnoreField 判断表的字段名是否忽略同步
 func (cfg *Config) IsIgnoreField(table string, name string) bool {
 	for tName, dit := range cfg.AlterIgnore {
 		if simpleMatch(tName, table, "IsIgnoreField_table") {
@@ -48,7 +61,7 @@ func (cfg *Config) IsIgnoreField(table string, name string) bool {
 	return false
 }
 
-// CheckMatchTables check table is match
+// CheckMatchTables 检查同步结构的表是否匹配
 func (cfg *Config) CheckMatchTables(name string) bool {
 	if len(cfg.Tables) == 0 {
 		return true
@@ -61,7 +74,7 @@ func (cfg *Config) CheckMatchTables(name string) bool {
 	return false
 }
 
-// CheckMatchSyncTables check sync table is match
+// CheckMatchSyncTables 检查同步数据的表是否匹配
 func (cfg *Config) CheckMatchSyncTables(name string) bool {
 	if len(cfg.SyncDataTables) == 0 {
 		return false
@@ -74,7 +87,7 @@ func (cfg *Config) CheckMatchSyncTables(name string) bool {
 	return false
 }
 
-// CheckMatchIgnoreTables check table_Ignore is match
+// CheckMatchIgnoreTables 检查忽略同步结构的表是否匹配
 func (cfg *Config) CheckMatchIgnoreTables(name string) bool {
 	if len(cfg.TablesIGNORE) == 0 {
 		return false
@@ -87,7 +100,7 @@ func (cfg *Config) CheckMatchIgnoreTables(name string) bool {
 	return false
 }
 
-// Check check config
+// Check 配置检测
 func (cfg *Config) Check() {
 	if cfg.SourceDSN == "" {
 		log.Fatal("source dns is empty")
@@ -98,10 +111,10 @@ func (cfg *Config) Check() {
 	//	log.Println("config:\n", cfg)
 }
 
-// IsIgnoreIndex is index ignore
+// IsIgnoreIndex 检测是否为忽略的表格索引
 func (cfg *Config) IsIgnoreIndex(table string, name string) bool {
-	for tname, dit := range cfg.AlterIgnore {
-		if simpleMatch(tname, table, "IsIgnoreIndex_table") {
+	for tName, dit := range cfg.AlterIgnore {
+		if simpleMatch(tName, table, "IsIgnoreIndex_table") {
 			for _, index := range dit.Index {
 				if simpleMatch(index, name) {
 					return true
@@ -114,8 +127,8 @@ func (cfg *Config) IsIgnoreIndex(table string, name string) bool {
 
 // IsIgnoreForeignKey 检查外键是否忽略掉
 func (cfg *Config) IsIgnoreForeignKey(table string, name string) bool {
-	for tname, dit := range cfg.AlterIgnore {
-		if simpleMatch(tname, table, "IsIgnoreForeignKey_table") {
+	for tName, dit := range cfg.AlterIgnore {
+		if simpleMatch(tName, table, "IsIgnoreForeignKey_table") {
 			for _, foreignName := range dit.ForeignKey {
 				if simpleMatch(foreignName, name) {
 					return true
@@ -126,7 +139,7 @@ func (cfg *Config) IsIgnoreForeignKey(table string, name string) bool {
 	return false
 }
 
-// SendMailFail send fail mail
+// SendMailFail 发送失败的邮件
 func (cfg *Config) SendMailFail(errStr string) {
 	if cfg.Email == nil {
 		log.Println("email conf is empty,skip send mail")
@@ -143,7 +156,7 @@ func (cfg *Config) SendMailFail(errStr string) {
 	cfg.Email.SendMail(title, body)
 }
 
-// LoadConfig load config file
+// LoadConfig 加载读取配置信息
 func LoadConfig(confPath string) *Config {
 	var cfg *Config
 	err := loadJSONFile(confPath, &cfg)
